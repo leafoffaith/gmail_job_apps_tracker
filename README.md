@@ -43,6 +43,7 @@ A Python script that automatically extracts job application details from your Gm
 1. Enable Gmail and Sheets APIs in [Google Cloud Console](https://console.cloud.google.com/).
 2. Download `credentials.json` and place it in the root folder.
 3. Install dependencies:
+4. Enter SheetID in sheet_upload.py to which you want to append the entries
 
 ```bash
 pip install -r requirements.txt
