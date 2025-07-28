@@ -1,0 +1,11 @@
+# Python virtual environment
+applications_venv/
+
+# Google API credentials and tokens
+credentials.json
+token.pickle
+
+# OS and editor files
+.DS_Store
+*.pyc
+__pycache__/ 
