@@ -72,6 +72,3 @@ python main.py
 
 Perfect for job seekers who want to **track applications** automatically without manually logging each one. Ideal if you use Gmail and apply to many roles via email.
 
----
-
-Let me know if you’d like a `README.md` version or a logo badge to go with it.
