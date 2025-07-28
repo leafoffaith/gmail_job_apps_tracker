@@ -8,7 +8,7 @@ from google.auth.transport.requests import Request
 # Google Sheets API scope for read/write
 SHEETS_SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # The ID of your Google Sheet
-SPREADSHEET_ID = '1JdCAf814gBZcFAjp5ZHWpbvHTRqVaNSQmOF-PHWWl9c'
+SPREADSHEET_ID = ''
 # The range to update (entire first sheet)
 RANGE_NAME = 'Sheet1'  # Change if your sheet/tab is named differently
 CSV_FILE = 'job_applications.csv'
