@@ -6,10 +6,12 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import pickle
 import sheets_upload
+import auto_apply
 
 # If modifying these SCOPES, delete the file token.pickle.
 SCOPES = [
     'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.send', 
     'https://www.googleapis.com/auth/spreadsheets'
 ]
 
@@ -98,6 +100,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    sheets_upload.upload_csv_to_sheet()
+    # main()
+    # sheets_upload.upload_csv_to_sheet()
+    auto_apply.main()
 
