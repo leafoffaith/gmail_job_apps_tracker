@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import pickle
+from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -8,8 +9,9 @@ from google.auth.transport.requests import Request
 # Google Sheets API scope for read/write
 SHEETS_SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 # The ID of your Google Sheet
-SPREADSHEET_ID = ''
+load_dotenv()
 # The range to update (entire first sheet)
+SPREADSHEET_ID = os.getenv('SHEET_ID')
 RANGE_NAME = 'Sheet1'  # Change if your sheet/tab is named differently
 CSV_FILE = 'job_applications.csv'
 

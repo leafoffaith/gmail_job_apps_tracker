@@ -45,8 +45,10 @@ def get_subject_and_date(service, msg_id):
     msg = service.users().messages().get(userId='me', id=msg_id, format='metadata', metadataHeaders=['Subject']).execute()
     headers = msg['payload']['headers']
     subject = None
+    
+
     for header in headers:
-        if header['name'] == 'Subject':
+        if header['name'].lower() == 'subject':
             subject = header['value']
             break
     # Get internalDate (milliseconds since epoch)
@@ -88,6 +90,7 @@ def main():
     service = authenticate_gmail()
     query = 'in:sent re:data engineering'
     messages = search_sent_emails(service, query)
+    
     if not messages:
         print('No messages found.')
         return
@@ -100,7 +103,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    # sheets_upload.upload_csv_to_sheet()
-    auto_apply.main()
+    # auto_apply.main()
+    main()
+    sheets_upload.upload_csv_to_sheet()
 

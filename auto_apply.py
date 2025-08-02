@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 """
-Cold Email Sender using Gmail API
+Cold Email Automation Tool using Gmail API
 
 Usage:
-    python auto_apply.py "Company Name" "recipient@example.com"
+    python auto_apply.py
 
-This script sends a standardized cold email with your CV attachment.
-The email template is pre-written and includes your contact information.
+This script reads from email_corpus.csv and sends standardized cold emails 
+to all contacts with your CV attachment. The email template is pre-written 
+and includes your contact information.
+
+CSV Format:
+    Company Name,Email Address
+    Company A,email1@companya.com
+    Company B,email2@companyb.com
 """
 
 import os
 import sys
 import base64
 import pickle
+import pandas as pd
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -111,78 +118,126 @@ Shaurya Dey
 https://shaurya-showcase-portfolio.vercel.app/"""
 
 
-def main():
-    """Main function to send cold email."""
-    if len(sys.argv) != 3:
-        print("Usage: python auto_apply.py \"Company Name\" \"recipient@example.com\"")
-        print("Example: python auto_apply.py \"TechCorp Inc\" \"john.doe@techcorp.com\"")
-        sys.exit(1)
+def read_email_corpus():
+    """Read the email corpus CSV file."""
+    csv_file = 'email_corpus.csv'
+    if not os.path.exists(csv_file):
+        print(f"Error: {csv_file} not found!")
+        return None
     
-    company_name = sys.argv[1]
-    recipient_email = sys.argv[2]
-    
-    # Validate email format (basic validation)
-    if '@' not in recipient_email or '.' not in recipient_email:
-        print("Error: Invalid email address format")
-        sys.exit(1)
-    
-    print(f"Preparing to send cold email to {recipient_email} at {company_name}")
-    
-    # Get email content (fixed template)
+    try:
+        df = pd.read_csv(csv_file)
+        if 'Company Name' not in df.columns or 'Email Address' not in df.columns:
+            print("Error: CSV must have 'Company Name' and 'Email Address' columns")
+            return None
+        return df
+    except Exception as e:
+        print(f"Error reading {csv_file}: {e}")
+        return None
+
+
+def send_single_email(service, company_name, recipient_email, cv_path):
+    """Send a single email to one recipient."""
     email_body = get_email_content(company_name)
+    subject = f"Re: Data Engineering at {company_name}"
     
-    # Create subject line
-    subject = f"Cold Outreach - {company_name}"
+    try:
+        message = create_message(recipient_email, subject, email_body, cv_path)
+        result = send_email(service, message)
+        
+        if result:
+            print(f"✅ Sent to {recipient_email} at {company_name}")
+            return True
+        else:
+            print(f"❌ Failed to send to {recipient_email} at {company_name}")
+            return False
+    except Exception as e:
+        print(f"❌ Error sending to {recipient_email} at {company_name}: {e}")
+        return False
+
+
+def main():
+    """Main function to send cold emails to all contacts in email_corpus.csv."""
+    print("🚀 Cold Email Automation Tool")
+    print("="*50)
+    
+    # Read email corpus
+    df = read_email_corpus()
+    if df is None:
+        sys.exit(1)
+    
+    print(f"📧 Found {len(df)} contacts in email_corpus.csv")
     
     # Check for CV attachment
     cv_path = "shaurya_dey_cv.pdf"
     if not os.path.exists(cv_path):
-        print(f"⚠️  Warning: CV file '{cv_path}' not found. Email will be sent without attachment.")
+        print(f"⚠️  Warning: CV file '{cv_path}' not found. Emails will not be sent without attachment.")
         cv_path = None
+        sys.exit(1)
     else:
         print(f"✅ CV attachment found: {cv_path}")
     
-    # Confirm before sending
+    # Show preview of all emails
     print("\n" + "="*50)
     print("EMAIL PREVIEW")
     print("="*50)
-    print(f"To: {recipient_email}")
-    print(f"Subject: {subject}")
-    print(f"Company: {company_name}")
-    if cv_path:
-        print(f"Attachment: {cv_path}")
-    print("-" * 50)
-    print("Content:")
-    print(email_body)
-    print("="*50)
+    for index, row in df.iterrows():
+        company_name = row['Company Name']
+        email = row['Email Address']
+        subject = f"Re: Data Engineering at {company_name}"
+        print(f"{index + 1}. {email} at {company_name}")
+        print(f"   Subject: {subject}")
     
-    confirm = input("\nDo you want to send this email? (yes/no): ").lower().strip()
+    print("="*50)
+    print(f"Total emails to send: {len(df)}")
+    if cv_path:
+        print(f"With attachment: {cv_path}")
+    
+    # Confirm before sending
+    confirm = input("\nDo you want to send all these emails? (yes/no): ").lower().strip()
     if confirm not in ['yes', 'y']:
-        print("Email cancelled.")
+        print("Email sending cancelled.")
         sys.exit(0)
     
-    # Authenticate and send
+    # Authenticate Gmail
     try:
         service = authenticate_gmail()
-        message = create_message(recipient_email, subject, email_body, cv_path)
-        
-        print("\nSending email...")
-        result = send_email(service, message)
-        
-        if result:
-            print(f"✅ Email sent successfully!")
-            print(f"Message ID: {result['id']}")
-            print(f"Sent to: {recipient_email}")
-            print(f"Company: {company_name}")
-            if cv_path:
-                print(f"With attachment: {cv_path}")
-        else:
-            print("❌ Failed to send email")
-            sys.exit(1)
-            
+        print("\n✅ Gmail authentication successful")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Gmail authentication failed: {e}")
         sys.exit(1)
+    
+    # Send emails
+    print("\n📤 Sending emails...")
+    print("-" * 50)
+    
+    successful = 0
+    failed = 0
+    
+    for index, row in df.iterrows():
+        company_name = row['Company Name']
+        email = row['Email Address']
+        
+        print(f"\n[{index + 1}/{len(df)}] Sending to {email} at {company_name}...")
+        
+        if send_single_email(service, company_name, email, cv_path):
+            successful += 1
+        else:
+            failed += 1
+    
+    # Summary
+    print("\n" + "="*50)
+    print("SENDING SUMMARY")
+    print("="*50)
+    print(f"✅ Successful: {successful}")
+    print(f"❌ Failed: {failed}")
+    print(f"📧 Total: {len(df)}")
+    print("="*50)
+    
+    if successful > 0:
+        print("🎉 Cold email campaign completed!")
+    else:
+        print("😞 No emails were sent successfully.")
 
 
 if __name__ == '__main__':
