@@ -103,7 +103,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # auto_apply.main()
+    auto_apply.main()
     main()
     sheets_upload.upload_csv_to_sheet()
 

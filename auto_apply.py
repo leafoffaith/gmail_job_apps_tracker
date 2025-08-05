@@ -104,7 +104,9 @@ def get_email_content(company_name):
     """Get the standard cold email template with company name."""
     return f"""Hi, 
 
-Hope you are well! My name is Shaurya. I am excited by {company_name}'s work and am reaching out to apply for a data engineering position. I have 2 years of relevant experience building full-stack applications, and working with data is one of my strongest suits. I like to work across the stack, from building scalable, robust backend systems to high-throughput data ingestion pipelines to production-grade frontend components in React. 
+Hope you are well! My name is Shaurya. I am excited by {company_name}'s work and am reaching out to apply for a data engineering position. 
+
+I have 2 years of relevant experience building full-stack applications, and working with data is one of my strongest suits. I like to work across the stack, from building scalable, robust backend systems to high-throughput data ingestion pipelines to production-grade frontend components in React. 
 Some of my recent projects include building end-to-end systems integrating Next.js UIs with Python- and Node-based services; an algorithmically enforced spaced repetition language learning app; and, most recently, implementing ETL pipelines and generating dashboards for Hakuhodo's data-driven integrated marketing team.
 
 Attaching my CV for your perusal. Happy to get on a call to discuss further.
